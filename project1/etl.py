@@ -3,41 +3,49 @@ import glob
 import psycopg2
 import pandas as pd
 from sql_queries import *
+import json
 
 
 def process_song_file(cur, filepath):
     # open song file
-    df = 
+    with open(filepath) as json_file:  
+        song_json = json.load(json_file)
 
     # insert song record
-    song_data = 
+    song_data = [song_json['song_id'],song_json['title'], song_json['artist_id'], song_json['year'], song_json['duration']]
     cur.execute(song_table_insert, song_data)
     
     # insert artist record
-    artist_data = 
+    artist_data = [song_json['artist_id'],song_json['artist_name'], song_json['artist_location'], song_json['artist_latitude'], song_json['artist_longitude']]
     cur.execute(artist_table_insert, artist_data)
 
 
 def process_log_file(cur, filepath):
     # open log file
-    df = 
+    log_df = pd.read_json(filepath, lines=True)
 
     # filter by NextSong action
-    df = 
+    df = log_df[log_df['page']=='NextSong']
 
     # convert timestamp column to datetime
-    t = 
+    df['ts'] = pd.to_datetime(df['ts'],unit='ms')
     
     # insert time data records
-    time_data = 
-    column_labels = 
-    time_df = 
+    df['hour'] = df['ts'].dt.hour
+    df['day'] = df['ts'].dt.day
+    df['week'] = df['ts'].dt.week
+    df['month'] = df['ts'].dt.month
+    df['year'] = df['ts'].dt.year
+    df['weekday'] = df['ts'].dt.weekday
+    
+    column_labels = ['ts','hour','day','week','month','year','weekday']
+    time_df = df[column_labels]
 
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
 
     # load user table
-    user_df = 
+    user_df = df[['userId','firstName','lastName','gender','level']]
 
     # insert user records
     for i, row in user_df.iterrows():
@@ -47,11 +55,11 @@ def process_log_file(cur, filepath):
     for index, row in df.iterrows():
         
         # get songid and artistid from song and artist tables
-        results = cur.execute(song_select, (row.song, row.artist, row.length))
+        results = cur.execute(song_select, (row['song'], row['length'], row['artist']))
         songid, artistid = results if results else None, None
 
         # insert songplay record
-        songplay_data = 
+        songplay_data = [row['ts'],row['userId'],row['level'],songid,artistid,row['sessionId'],row['location'],row['userAgent']]
         cur.execute(songplay_table_insert, songplay_data)
 
 
