@@ -1,29 +1,3 @@
-"""
-Fact Table
-----------
-
-songplays - records in log data associated with song plays i.e. records with page NextSong
-songplay_id, start_time, user_id, level, song_id, artist_id, session_id, location, user_agent
-
-
-Dimension Tables
-----------------
-
-users - users in the app
-user_id, first_name, last_name, gender, level
-
-songs - songs in music database
-song_id, title, artist_id, year, duration
-
-artists - artists in music database
-artist_id, name, location, lattitude, longitude
-
-time - timestamps of records in songplays broken down into specific units
-start_time, hour, day, week, month, year, weekday
-
-"""
-
-
 # DROP TABLES
 
 songplay_table_drop = "DROP TABLE IF EXISTS songplays"
@@ -35,11 +9,11 @@ time_table_drop = "DROP TABLE IF EXISTS time"
 # CREATE TABLES
 
 songplay_table_create = """
-CREATE TABLE songplays 
+CREATE TABLE songplays
 (
 songplay_id SERIAL PRIMARY KEY,
-start_time TIMESTAMP,
-user_id INTEGER,
+start_time TIMESTAMP NOT NULL,
+user_id INTEGER NOT NULL,
 level VARCHAR(20),
 song_id INTEGER,
 artist_id INTEGER,
@@ -49,7 +23,6 @@ user_agent TEXT
 );
 """
 
-#user_id, first_name, last_name, gender, level
 user_table_create = """
 CREATE TABLE users
 (
@@ -62,7 +35,6 @@ PRIMARY KEY (user_id)
 );
 """
 
-#song_id, title, artist_id, year, duration
 song_table_create = """
 CREATE TABLE songs
 (
@@ -75,21 +47,18 @@ PRIMARY KEY (song_id)
 )
 """
 
-#artist_id, name, location, lattitude, longitude
 artist_table_create = """
 CREATE TABLE artists
 (
 artist_id VARCHAR NOT NULL,
 name TEXT,
 location TEXT,
-latitude VARCHAR,
-longitude VARCHAR,
+latitude NUMERIC,
+longitude NUMERIC,
 PRIMARY KEY (artist_id)
 )
 """
 
-
-#start_time, hour, day, week, month, year, weekday
 time_table_create = """
 CREATE TABLE time
 (
@@ -105,12 +74,14 @@ weekday INTEGER
 
 # INSERT RECORDS
 songplay_table_insert = """
-INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent) 
+INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
 VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
 """
 
 user_table_insert = """
-INSERT INTO users (user_id, first_name, last_name, gender, level) VALUES (%s,%s,%s,%s,%s) ON CONFLICT (user_id) DO UPDATE set (first_name, last_name, gender, level) = (EXCLUDED.first_name, EXCLUDED.last_name, EXCLUDED.gender, EXCLUDED.level)
+INSERT INTO users (user_id, first_name, last_name, gender, level) VALUES (%s,%s,%s,%s,%s)
+ON CONFLICT (user_id)
+DO UPDATE set (first_name, last_name, gender, level) = (EXCLUDED.first_name, EXCLUDED.last_name, EXCLUDED.gender, EXCLUDED.level)
 """
 
 song_table_insert = """

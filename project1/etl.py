@@ -4,6 +4,11 @@ import psycopg2
 import pandas as pd
 from sql_queries import *
 import json
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
 
 
 def process_song_file(cur, filepath):
