@@ -17,6 +17,7 @@ This database schema was created to minimize duplcate datak and allow various ag
 Sample Queries and Results:
 
 1. Most songplays by level:
+
 SELECT sp.level, count(*) from songplays sp group by sp.level
 
 | Level | Count |
@@ -26,6 +27,7 @@ SELECT sp.level, count(*) from songplays sp group by sp.level
 
 
 2. What hour has the most song plays:
+
 SELECT t.hour, count(*) from songplays sp
 left join time t on
 t.start_time = sp.start_time
@@ -45,6 +47,7 @@ order by count DESC
 
 
 3. Most active users
+
 SELECT u.first_name, u.last_name, count(*) from songplays sp 
 left join users u on
 u.user_id = sp.user_id
