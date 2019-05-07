@@ -13,10 +13,19 @@ Schema:
 
 This database schema was created to minimize duplcate datak and allow various aggregations based on "NextSong" logs.
 
+Songs Table
 ![Songs Table](songs.png)
+
+Artists Table
 ![Artists Table](artists.png)
+
+Time Table
 ![Time Table](time.png)
+
+Song Plays Table
 ![Song Plays Table](songplays.png)
+
+Users Table
 ![Users Table](users.png)
 
 
