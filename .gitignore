@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 tags
 data
+aws
 
 # C extensions
 *.so
