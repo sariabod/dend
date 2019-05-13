@@ -5,6 +5,7 @@ __pycache__/
 tags
 data
 aws
+*.cfg
 
 # C extensions
 *.so
