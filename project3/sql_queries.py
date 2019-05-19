@@ -142,9 +142,9 @@ FORMAT AS JSON 'auto';
 
 songplay_table_insert = """
 create temp table songplay_stage (like songplays);
-INSERT INTO songplay_stage (row_id, start_time, user_id, level,
+INSERT INTO songplay_stage (songplay_id, row_id, start_time, user_id, level,
 song_id, artist_id, session_id, location, user_agent)
-(SELECT (se.ts || '_' || se.userid || '_' || se.sessionid) as row_id,
+(SELECT 0 as songplay_id, (se.ts || '_' || se.userid || '_' || se.sessionid) as row_id,
 se.ts, se.userid, se.level, s.song_id, s.artist_id, se.sessionid, se.location, se.useragent
 FROM staging_events se
 left join songs s
