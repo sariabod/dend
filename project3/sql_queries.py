@@ -60,7 +60,8 @@ year INTEGER
 songplay_table_create = """
 CREATE TABLE songplays
 (
-songplay_id VARCHAR,
+songplay_id INT IDENTITY(1,1),
+row_id VARCHAR,
 start_time BIGINT NOT NULL,
 user_id INTEGER NOT NULL,
 level VARCHAR(20),
@@ -90,7 +91,7 @@ CREATE TABLE songs
 (
 song_id VARCHAR NOT NULL,
 title TEXT,
-artist_id VARCHAR,
+artist_id VARCHAR NOT NULL,
 year INTEGER ,
 duration NUMERIC,
 PRIMARY KEY (song_id)
@@ -141,9 +142,9 @@ FORMAT AS JSON 'auto';
 
 songplay_table_insert = """
 create temp table songplay_stage (like songplays);
-INSERT INTO songplay_stage (songplay_id, start_time, user_id, level,
+INSERT INTO songplay_stage (row_id, start_time, user_id, level,
 song_id, artist_id, session_id, location, user_agent)
-(SELECT (se.ts || '_' || se.userid || '_' || se.sessionid) as songplay_id,
+(SELECT (se.ts || '_' || se.userid || '_' || se.sessionid) as row_id,
 se.ts, se.userid, se.level, s.song_id, s.artist_id, se.sessionid, se.location, se.useragent
 FROM staging_events se
 left join songs s
@@ -154,14 +155,15 @@ update songplays
 set song_id = songplay_stage.song_id,
 artist_id = songplay_stage.artist_id
 from songplay_stage
-where songplays.songplay_id = songplay_stage.songplay_id;
+where songplays.row_id = songplay_stage.row_id;
 
 delete from songplay_stage
 using songplays
-where songplay_stage.songplay_id = songplays.songplay_id;
+where songplay_stage.row_id = songplays.row_id;
 
-insert into songplays
-(select songplay_id, start_time, user_id, level, song_id, artist_id, session_id,
+insert into songplays (row_id, start_time, user_id, level, song_id, artist_id, session_id,
+location, user_agent)
+(select distinct(row_id), start_time, user_id, level, song_id, artist_id, session_id,
 location, user_agent from songplay_stage);
 
 drop table songplay_stage;
@@ -183,7 +185,7 @@ using users
 where users_stage.user_id = users.user_id;
 
 insert into users
-(select user_id, first_name, last_name, gender, level from users_stage);
+(select distinct(user_id), first_name, last_name, gender, level from users_stage);
 
 drop table users_stage;
 """
@@ -199,7 +201,7 @@ using songs
 where songs_stage.song_id = songs.song_id;
 
 insert into songs
-(select song_id, title, artist_id, year, duration from songs_stage);
+(select distinct(song_id), title, artist_id, year, duration from songs_stage);
 
 drop table songs_stage;
 """
@@ -215,7 +217,7 @@ using artists
 where artists_stage.artist_id = artists.artist_id;
 
 insert into artists
-(select artist_id, name, location, longitude, latitude from artists_stage);
+(select distinct(artist_id), name, location, longitude, latitude from artists_stage);
 
 drop table artists_stage;
 """
@@ -235,14 +237,11 @@ then 0 else 1
 end
 FROM staging_events
 order by ts);
-
 delete from time_stage
 using time
 where time_stage.start_time = time.start_time;
-
 insert into time
-(select start_time, hour, day, week, month, year, weekday from time_stage);
-
+(select distinct(start_time), hour, day, week, month, year, weekday from time_stage);
 drop table time_stage;
 """
 
