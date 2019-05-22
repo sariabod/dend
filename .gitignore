@@ -6,6 +6,8 @@ tags
 data
 aws
 *.cfg
+input
+output
 
 # C extensions
 *.so
