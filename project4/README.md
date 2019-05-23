@@ -1,7 +1,7 @@
 Purpose of Project
 ------------------
 
-Create an ETL pipeline to parse song and log data and store them into s3 so they can be later queried by stake holders and analysts.
+Create an ETL pipeline using PySpark to parse song and log data and store them into the local file system, and hdfs file system, or remote file system (such as s3) so they can be later queried by stake holders and analysts.
 
 Steps:
 
