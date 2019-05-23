@@ -155,8 +155,8 @@ def main():
     output_data = config["S3"]["OUT_PATH"]
 
     # uncomment for local files
-    input_data = 'input'
-    output_data = 'output'
+    # input_data = 'input'
+    # output_data = 'output'
 
     process_song_data(spark, input_data, output_data)
     process_log_data(spark, input_data, output_data)
