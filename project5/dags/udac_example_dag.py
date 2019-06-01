@@ -15,7 +15,7 @@ default_args = {
     'email': ['sariabod@gmail.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 3,
+    'retries': 0,
     'retry_delay': timedelta(minutes=5),
     'catchup_by_default': False,
     # 'queue': 'bash_queue',
@@ -103,8 +103,8 @@ run_quality_checks = DataQualityOperator(
     dag=dag,
     redshift_conn_id="redshift",
     column = "songid",
-    skip = True,
-    query = sq.song_id_check
+    skip = True
+)
 
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)

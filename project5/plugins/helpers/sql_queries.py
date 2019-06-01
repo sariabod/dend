@@ -40,7 +40,3 @@ class SqlQueries:
                extract(month from start_time), extract(year from start_time), extract(dayofweek from start_time)
         FROM songplays
     """)
-
-    song_id_check = ("""
-            SELECT count(*) as mycount FROM songplays where {} is null
-    """)

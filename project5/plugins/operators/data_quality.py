@@ -9,14 +9,12 @@ class DataQualityOperator(BaseOperator):
     @apply_defaults
     def __init__(self,
                  redshift_conn_id="",
-                 query="",
                  column="",
                  skip=False,
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         self.redshift_conn_id = redshift_conn_id
-        self.query = query
         self.column = column
 
     def execute(self, context):
@@ -25,9 +23,12 @@ class DataQualityOperator(BaseOperator):
             return
 
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
-
         self.log.info("Check Null Value")
-        query = self.query.format(self.table)
+
+        query = """
+            SELECT count(*) as mycount FROM songplays where {} is null
+        """.format(self.column)
+
         records = redshift.get_records(query)
         if records[0] > 0:
             raise ValueError("Data quality check failed. Songplays - {} has null values".format(self.column))
